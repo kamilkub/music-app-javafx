@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -104,12 +105,13 @@ public class Main extends Application implements Initializable {
 	}
 
 	public void start_click() throws FileNotFoundException, JavaLayerException {
-
+               
 		try {
-
+            
 			STREAM_MUSIC = new FileInputStream(SONG_PATH);
 			MUSIC_PLAYER = new Player(STREAM_MUSIC);
-
+            progressbar.setProgress(-1.0f);
+			
 			if (play.getOnAction() != null) {
 				play.setDisable(true);
 			}
@@ -121,7 +123,7 @@ public class Main extends Application implements Initializable {
 
 		new Thread() {
 			public void run() {
-
+                  
 				try {
 					MUSIC_PLAYER.play();
 					SONG_TIME = MUSIC_PLAYER.getPosition();
@@ -150,6 +152,8 @@ public class Main extends Application implements Initializable {
 		try {
 			MUSIC_PLAYER.close();
 			STREAM_MUSIC.close();
+			progressbar.setProgress(0);
+			play.setDisable(false);
 		} catch (Exception ed) {
 			JOptionPane.showMessageDialog(null, "Choose File", "Error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -161,5 +165,10 @@ public class Main extends Application implements Initializable {
 		System.exit(0);
 
 	}
+	
+	
+		
+	
+	
 
 }
