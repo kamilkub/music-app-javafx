@@ -152,8 +152,10 @@ public class Main extends Application implements Initializable {
 
 	}
 
+	/*
+	 NOT IMPLEMENTED YET - and I think it's not gonna happen in the near future :)
+	 */
 	public void settings_click() {
-
 
 	}
 
