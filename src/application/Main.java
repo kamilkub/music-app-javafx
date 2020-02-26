@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.swing.Action;
@@ -13,7 +15,7 @@ import javax.swing.JOptionPane;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXProgressBar;
-import com.sun.media.jfxmedia.MediaPlayer;
+
 
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -31,6 +33,8 @@ import javazoom.jl.player.Player;
 public class Main extends Application implements Initializable {
 
 	private File SONG_PATH;
+	private List<File> LIST_OF_PREVIOUS_SONG_PATHS = new ArrayList<>();
+	private int PREVIOUS_PATH_TRACKER = 0;
 	private Player MUSIC_PLAYER;
 	private FileInputStream STREAM_MUSIC;
 	private double SONG_TIME;
@@ -89,61 +93,67 @@ public class Main extends Application implements Initializable {
 
 	public void source_click() {
 
-		try {
 			JFileChooser chooser = new JFileChooser();
 			chooser.setDialogTitle("Pick some mp3");
 			chooser.showOpenDialog(null);
 			SONG_PATH = chooser.getSelectedFile();
+			LIST_OF_PREVIOUS_SONG_PATHS.add(SONG_PATH);
+		System.out.println(LIST_OF_PREVIOUS_SONG_PATHS.size());
 
 			if (!SONG_PATH.getName().endsWith(".mp3")) {
 				JOptionPane.showMessageDialog(null, "Invalid file format", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 
-		} catch (Exception e) {
-
-		}
 	}
 
 	public void start_click() throws FileNotFoundException, JavaLayerException {
-               
-		try {
-            
+
+		if(SONG_PATH != null) {
 			STREAM_MUSIC = new FileInputStream(SONG_PATH);
 			MUSIC_PLAYER = new Player(STREAM_MUSIC);
-            progressbar.setProgress(-1.0f);
-			
+			progressbar.setProgress(-1.0f);
+
 			if (play.getOnAction() != null) {
 				play.setDisable(true);
 			}
 
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Choose File", "Error", JOptionPane.ERROR_MESSAGE);
+			new Thread(() -> {
 
-		}
-
-		new Thread() {
-			public void run() {
-                  
 				try {
 					MUSIC_PLAYER.play();
 					SONG_TIME = MUSIC_PLAYER.getPosition();
 					if (MUSIC_PLAYER.isComplete())
-					STREAM_MUSIC.close();
+						STREAM_MUSIC.close();
 
 				} catch (Exception e) {
-
+					e.printStackTrace();
 				}
 				progressbar.setProgress(SONG_TIME);
-			}
-		}.start();
+			}).start();
+
+		} else {
+			JOptionPane.showMessageDialog(null, "No file has been selected", "Error", JOptionPane.ERROR_MESSAGE);
+		}
 
 	}
 
 	public void previous_click() {
+		PREVIOUS_PATH_TRACKER = LIST_OF_PREVIOUS_SONG_PATHS.size()-1;
+
+		if(LIST_OF_PREVIOUS_SONG_PATHS.size() == 0)
+			JOptionPane.showMessageDialog(null, "No previous music", "Error", JOptionPane.ERROR_MESSAGE);
+
+		if(LIST_OF_PREVIOUS_SONG_PATHS.size() == 1){
+			SONG_PATH = LIST_OF_PREVIOUS_SONG_PATHS.get(0);
+		} else if(LIST_OF_PREVIOUS_SONG_PATHS.size() > 1) {
+			PREVIOUS_PATH_TRACKER--;
+			SONG_PATH = LIST_OF_PREVIOUS_SONG_PATHS.get(PREVIOUS_PATH_TRACKER);
+		}
 
 	}
 
 	public void settings_click() {
+
 
 	}
 
@@ -163,7 +173,6 @@ public class Main extends Application implements Initializable {
 
 	public void exit_click() {
 		System.exit(0);
-
 	}
 	
 	
