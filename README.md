@@ -11,7 +11,8 @@ To set-up the project and make it work first off download this library:<br>
 <br>
 Extract the archive and add it to the Project Structure<br>
 
-<code>File > Project Structure > Libraries > + > #Selected path of the jar you've extracted in FileChooser#</code>
+<code>File > Project Structure > Libraries > + > !Selecte path of the jar you've extracted! </code>
+<br>
 <br>
 <br>
 ![alt tag](presentation.png)
